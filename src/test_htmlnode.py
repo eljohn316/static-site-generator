@@ -1,6 +1,5 @@
 import unittest
 
-
 from htmlnode import HTMLNode
 
 
@@ -38,3 +37,7 @@ class TestHTMLNode(unittest.TestCase):
     def test_htmlnode_empty_props(self):
         node = HTMLNode()
         self.assertEqual(node.props_to_html(), "")
+
+
+if __name__ == "__main__":
+    unittest.main()
