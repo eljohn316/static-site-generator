@@ -20,7 +20,7 @@ class HTMLNode:
 
         props = []
         for key, value in self.props.items():
-            props.append(f"{key}={value}")
+            props.append(f'{key}="{value}"')
 
         return f" {" ".join(props)}"
 
