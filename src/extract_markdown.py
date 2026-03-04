@@ -16,24 +16,6 @@ def has_markdown_link_syntax(text) -> bool:
     return bool(re.search(pattern, text))
 
 
-def parse_new_nodes(
-    text: str, markdown_links: list[tuple[str, str]], node_lst: list[TextNode]
-):
-    if len(markdown_links) == 0:
-        return
-
-    for image_alt, image_link in markdown_links:
-        parts = text.split(f"[{image_alt}]({image_link})", 1)
-
-        if len(parts) < 2:
-            return
-
-        node_lst.append(TextNode(parts[0], TextType.TEXT))
-        node_lst.append(TextNode(image_alt, TextType.LINK, image_link))
-
-        parse_new_nodes(parts[1], markdown_links[1:], node_lst)
-
-
 def split_nodes_image(old_nodes):
     new_nodes = []
     for old_node in old_nodes:
