@@ -4,6 +4,7 @@ from block_markdown import (
     BlockType,
     block_to_block_type,
     markdown_to_html_node,
+    extract_title,
 )
 
 
@@ -162,6 +163,26 @@ the **same** even with inline stuff
             html,
             "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
         )
+
+    def test_extract_title(self):
+        md = """
+# This is a sample heading
+
+- List one
+- List two
+"""
+        title = extract_title(md)
+        self.assertEqual(title, "This is a sample heading")
+
+    def test_extract_title_exception(self):
+        md = """
+* This is a sample heading
+
+- List one
+- List two
+"""
+        with self.assertRaises(Exception):
+            extract_title(md)
 
 
 if __name__ == "__main__":

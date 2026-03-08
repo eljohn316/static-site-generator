@@ -1,5 +1,2 @@
 python src/main.py
-
-ls public
-
-ls public/images
+cd public && python -m http.server 8888

@@ -1,6 +1,12 @@
 import os
 import shutil
 
+from block_markdown import markdown_to_html_node, extract_title
+
+
+dir_path_static = "./static"
+dir_path_public = "./public"
+
 
 def copy_contents(src: str, dest: str):
     src_dir = os.path.abspath(src)
@@ -29,12 +35,29 @@ def copy_contents(src: str, dest: str):
             copy_contents(curr_content, new_dest_dir)
 
 
-dir_path_static = "./static"
-dir_path_public = "./public"
+def generate_page(from_path: str, template_path: str, dest_path: str):
+    print(
+        f"Generating page from '{from_path}' to '{dest_path}' using '{template_path}'"
+    )
+
+    with open(from_path) as f:
+        markdown = f.read()
+
+    with open(template_path) as f:
+        template = f.read()
+
+    html_str = markdown_to_html_node(markdown).to_html()
+    title = extract_title(markdown)
+
+    template = template.replace("{{ Title }}", title).replace("{{ Content }}", html_str)
+
+    with open(dest_path, "w") as f:
+        f.write(template)
 
 
 def main():
     copy_contents(dir_path_static, dir_path_public)
+    generate_page("content/index.md", "template.html", "public/index.html")
 
 
 if __name__ == "__main__":
