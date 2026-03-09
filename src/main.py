@@ -51,11 +51,12 @@ def generate_page(from_path: str, template_path: str, dest_path: str, basepath: 
     html_str = markdown_to_html_node(markdown).to_html()
     title = extract_title(markdown)
 
+    print(basepath)
     template = (
         template.replace("{{ Title }}", title)
         .replace("{{ Content }}", html_str)
-        .replace('href="/"', f'href="{basepath}"')
-        .replace('src="/"', f'src="{basepath}"')
+        .replace('href="/', f'href="{basepath}')
+        .replace('src="/', f'src="{basepath}')
     )
 
     with open(dest_path, "w") as f:
