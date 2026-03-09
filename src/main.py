@@ -1,12 +1,13 @@
 import os
 import shutil
-from pathlib import Path
+import sys
 
+from pathlib import Path
 from block_markdown import markdown_to_html_node, extract_title
 
 
 dir_path_static = "./static"
-dir_path_public = "./public"
+dir_path_public = "./docs"
 
 
 def copy_contents(src: str, dest: str):
@@ -36,7 +37,7 @@ def copy_contents(src: str, dest: str):
             copy_contents(curr_content, new_dest_dir)
 
 
-def generate_page(from_path: str, template_path: str, dest_path: str):
+def generate_page(from_path: str, template_path: str, dest_path: str, basepath: str):
     print(
         f"Generating page from '{from_path}' to '{dest_path}' using '{template_path}'"
     )
@@ -50,14 +51,19 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
     html_str = markdown_to_html_node(markdown).to_html()
     title = extract_title(markdown)
 
-    template = template.replace("{{ Title }}", title).replace("{{ Content }}", html_str)
+    template = (
+        template.replace("{{ Title }}", title)
+        .replace("{{ Content }}", html_str)
+        .replace('href="/"', f'href="{basepath}"')
+        .replace('src="/"', f'src="{basepath}"')
+    )
 
     with open(dest_path, "w") as f:
         f.write(template)
 
 
 def generate_pages_recursive(
-    dir_path_content: str, template_path: str, dest_dir_path: str
+    dir_path_content: str, template_path: str, dest_dir_path: str, basepath: str
 ):
     contents = os.listdir(dir_path_content)
     for content in contents:
@@ -67,22 +73,25 @@ def generate_pages_recursive(
                 curr_content,
                 template_path,
                 dest_dir_path + "/" + f"{content.strip('.md')}.html",
+                basepath,
             )
         else:
             new_dest_dir_path = Path(
                 os.path.join(os.path.abspath(dest_dir_path), content)
             )
             new_dest_dir_path.mkdir(exist_ok=True)
-            print(new_dest_dir_path.as_posix())
             generate_pages_recursive(
-                curr_content, template_path, new_dest_dir_path.as_posix()
+                curr_content, template_path, new_dest_dir_path.as_posix(), basepath
             )
 
 
 def main():
-    # copy_contents(dir_path_static, dir_path_public)
-    # generate_page("content/index.md", "template.html", "public/index.html")
-    generate_pages_recursive("content", "template.html", "public")
+    basepath = "/"
+    if len(sys.argv) > 1:
+        basepath = sys.argv[1]
+
+    copy_contents(dir_path_static, dir_path_public)
+    generate_pages_recursive("content", "template.html", dir_path_public, basepath)
 
 
 if __name__ == "__main__":
