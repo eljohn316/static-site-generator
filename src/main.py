@@ -6,8 +6,8 @@ from pathlib import Path
 from block_markdown import markdown_to_html_node, extract_title
 
 
-dir_path_static = "./static"
-dir_path_public = "./docs"
+dir_path_static = "static"
+dir_path_public = "docs"
 
 
 def copy_contents(src: str, dest: str):
