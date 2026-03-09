@@ -1,5 +1,6 @@
 import os
 import shutil
+from pathlib import Path
 
 from block_markdown import markdown_to_html_node, extract_title
 
@@ -55,9 +56,33 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
         f.write(template)
 
 
+def generate_pages_recursive(
+    dir_path_content: str, template_path: str, dest_dir_path: str
+):
+    contents = os.listdir(dir_path_content)
+    for content in contents:
+        curr_content = os.path.join(os.path.abspath(dir_path_content), content)
+        if os.path.isfile(curr_content):
+            generate_page(
+                curr_content,
+                template_path,
+                dest_dir_path + "/" + f"{content.strip('.md')}.html",
+            )
+        else:
+            new_dest_dir_path = Path(
+                os.path.join(os.path.abspath(dest_dir_path), content)
+            )
+            new_dest_dir_path.mkdir(exist_ok=True)
+            print(new_dest_dir_path.as_posix())
+            generate_pages_recursive(
+                curr_content, template_path, new_dest_dir_path.as_posix()
+            )
+
+
 def main():
-    copy_contents(dir_path_static, dir_path_public)
-    generate_page("content/index.md", "template.html", "public/index.html")
+    # copy_contents(dir_path_static, dir_path_public)
+    # generate_page("content/index.md", "template.html", "public/index.html")
+    generate_pages_recursive("content", "template.html", "public")
 
 
 if __name__ == "__main__":
